@@ -1,7 +1,21 @@
 from Bio import AlignIO
 
+
+def transformToInput(alignment):
+
+    original_sequences = {}
+
+    for record in alignment:
+        original_sequences[record.id] = str(record.seq).replace('-', '')
+
+    return original_sequences
+
+
+
+
+
 # Path to your alignment file
-file_path = 'PF00005.alignment.seed'
+file_path = 'data/PF00005.alignment.seed'
 
 # Read the alignment
 alignment = AlignIO.read(file_path, "stockholm")
@@ -20,5 +34,15 @@ else:
 
 
 print("Alignment length %i" % alignment.get_alignment_length())
+
+all_leters = set()
+lengths = set()
 for record in alignment:
-    print(record.seq + " id: " + record.id)
+    lengths.add(len(str(record.seq)))
+    for letter in str(record.seq):
+        all_leters.add(letter)
+
+    # print(record.seq)# + " id: " + record.id)
+
+print(lengths)
+print(all_leters)
