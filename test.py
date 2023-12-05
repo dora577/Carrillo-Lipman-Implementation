@@ -1,5 +1,7 @@
 from StarAlignment import StarTreeAlignment
 
+import itertools
+from utils import tuple_sum
 alphabet = ['A', 'C', 'G', 'T', '-']
 
 delta = {}
@@ -15,12 +17,21 @@ sequences = {"v1":"TGGGAGCGA",
              "v3":"TGCCGGA",
              "v4":"AGCCGGGAA"}
 
+print(tuple_sum((1,2,3,5),(2,3,4,5,6)))
 
 
-ST = StarTreeAlignment(sequences, delta)
+# ST = StarTreeAlignment(sequences, delta)
 
-print(ST.find_center_sequence())
+# print(ST.find_center_sequence())
+
+# print(ST.align())
 
 
-for t in sequences.items():
-    print(t)
+# for t in sequences.items():
+#     print(t)
+
+
+
+
+
+

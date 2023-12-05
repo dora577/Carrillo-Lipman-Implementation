@@ -5,10 +5,12 @@ def transformToInput(alignment):
 
     original_sequences = {}
 
+    lengths = set()
+
     for record in alignment:
         original_sequences[record.id] = str(record.seq).replace('-', '')
-
-    return original_sequences
+        lengths.add(len(original_sequences[record.id]))
+    return original_sequences, lengths
 
 
 
@@ -46,3 +48,8 @@ for record in alignment:
 
 print(lengths)
 print(all_leters)
+
+original_sequences, lengths = transformToInput(alignment)
+
+
+print(lengths)
