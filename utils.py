@@ -11,6 +11,15 @@ def tuple_sum(tuple1, tuple2):
 
     return tuple(summation)
 
+def tuple_diff(tuple1, tuple2):
+    if len(tuple1) != len(tuple2):
+        raise ValueError("summing two tuples of different sizes")
+    difference = []
+    for i in range(len(tuple1)):
+        difference.append(tuple1[i]-tuple2[i])
+
+    return tuple(difference)
+
 def pairwise_cost(seq1, seq2, delta):
         """ Compute pairwise cost of aligning two sequences. """
         cost = 0
@@ -24,7 +33,6 @@ def pairwise_cost(seq1, seq2, delta):
 
 def SP_cost(alignment, delta):
     total_cost = 0
-    breakpoint()
     for i, key_i in enumerate(alignment.keys()):
         for j, key_j in enumerate(alignment.keys()):
             if i < j:

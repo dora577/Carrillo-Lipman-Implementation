@@ -1,18 +1,15 @@
 
-from utils import global_align
+from utils import global_align, INT_MAX, SP_cost
+
 class StarTreeAlignment:
     def __init__(self, sequences, delta):
     
         self.sequences = sequences
         self.delta = delta
-
-  
-
         self.pariwise_alignments = self.generate_pairwise_alignments()
 
         self.center_id = None
-        self.MSA = None
-
+        self.alignment = None
 
     def generate_pairwise_alignments(self):
 
@@ -28,15 +25,11 @@ class StarTreeAlignment:
                     pairwise_alignments[seq_id2][seq_id1] = pairwise_alignments[seq_id1][seq_id2]
         return pairwise_alignments
 
-
-
-
-
     def find_center_sequence(self):
         """
         Find center of a star that minimizes the distance 
         """
-        min_distance = float('inf')
+        min_distance = INT_MAX   
         center_sequence_id = None
 
         for seq_id in self.sequences:
@@ -70,17 +63,17 @@ class StarTreeAlignment:
 
         return new_gap_positions
 
-    def update_MSA(self, new_center_sequence):
+    def update_alignment(self, new_center_sequence):
 
-        old_center_sequence = self.MSA[self.center_id]
+        old_center_sequence = self.alignment[self.center_id]
 
         newGappedPositions =  self.find_new_gaps(old_center_sequence, new_center_sequence)
 
-        for id in self.MSA.keys():
+        for id in self.alignment.keys():
 
             for position in newGappedPositions:
 
-                self.MSA[id] = self.MSA[id][:position] + "-" + self.MSA[id][position:]
+                self.alignment[id] = self.alignment[id][:position] + "-" + self.alignment[id][position:]
         
 
     def align(self):
@@ -90,19 +83,19 @@ class StarTreeAlignment:
         """
         self.center_id = self.find_center_sequence()
         center_sequence = self.sequences[self.center_id]
-        self.MSA = {self.center_id: center_sequence}
+        self.alignment = {self.center_id: center_sequence}
         for seq_tuple in self.sequences.items():
             if seq_tuple[0] != self.center_id:
 
-                _, alignment = global_align((self.center_id, self.MSA[self.center_id]),seq_tuple, self.delta)
+                _, alignment = global_align((self.center_id, self.alignment[self.center_id]),seq_tuple, self.delta)
 
                 new_center_sequence = alignment[self.center_id]
 
-                self.update_MSA(new_center_sequence)
+                self.update_alignment(new_center_sequence)
 
-                self.MSA[seq_tuple[0]] = alignment[seq_tuple[0]]
-       
-        return self.MSA
+                self.alignment[seq_tuple[0]] = alignment[seq_tuple[0]]
+
+        return self.alignment, SP_cost(self.alignment,self.delta)
 
 if __name__ == "__main__":
     pass

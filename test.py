@@ -17,9 +17,25 @@ sequences = {"v1":"TGGGAGCGA",
              "v3":"TGCCGGA",
              "v4":"AGCCGGGAA"}
 
-print(tuple_sum((1,2,3,5),(2,3,4,5,6)))
+# print(tuple_sum((1,2,3,5),(2,3,4,5,6)))
 
 
+from queue import PriorityQueue
+
+q = PriorityQueue()
+
+
+q.put((5,(0,0,0,0)))
+
+q.put((1,(0,0,0,1)))
+
+
+
+
+priority, current = q.get()
+
+print(priority)
+print(current)
 # ST = StarTreeAlignment(sequences, delta)
 
 # print(ST.find_center_sequence())
