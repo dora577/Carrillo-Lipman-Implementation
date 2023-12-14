@@ -5,7 +5,7 @@
 This repository contains the implementation of the Carrillo-Lipman algorithm for multiple sequence alignment (MSA). Our focus is on the minimum edit distance problem, aligning a collection of sequences within a k-dimensional space to optimize the sum-of-pairs (SP) cost. This approach is particularly effective in bioinformatics for aligning protein sequences.
 
 ### Initial Sequence Processing
-In this stage, we prepared the dataset for alignment. This involved processing protein sequences from various species and genes (e.g., AHSG, APOA1, HBAZ). To manage time and computational demands, sequence lengths were reduced from 120-250 to 60-70 amino acids. The reference multiple alignments can be accessed [here](https://drive.google.com/file/d1S_QzhT34_zmEmEoUo4SxTpVnLb1KLgrw/view?usp=sharing).
+In this stage, we prepared the dataset for alignment. This involved processing protein sequences from various species and genes (e.g., AHSG, APOA1, HBAZ). To manage time and computational demands, sequence lengths were reduced from 120-250 to 60-70 amino acids. The reference multiple alignments can be accessed [here](https://drive.google.com/file/d/1S_QzhT34_zmEmEoUo4SxTpVnLb1KLgrw/view?usp=share_link).
 
 
 ## How to Run Carrillo-Lipman
