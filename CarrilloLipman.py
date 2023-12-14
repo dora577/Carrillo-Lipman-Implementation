@@ -8,10 +8,8 @@ from StarAlignment import StarTreeAlignment
 import time
 
 
-
 from utils import tuple_sum, tuple_diff, global_align
 
-from config import INT_MAX
 from tqdm import tqdm
 
 class CarrilloLipman:
@@ -25,12 +23,10 @@ class CarrilloLipman:
         end_time = time.time()
         print(f"Execution time Star Alignment: {round(end_time - start_time,2)} seconds")
 
-
-        breakpoint()
         self.sequences = sequences
         self.delta = delta
         self.k = len(sequences.keys())
-
+ 
         self.id2key = {}
         self.key2id = {}
         self.lengths = []
@@ -58,15 +54,8 @@ class CarrilloLipman:
         
         self.edit_graph = {}
 
+        self.edit_graph[self.source] = (0, True, None)
 
-        # print("Starting initializing graph")
-        
-        # start_time = time.time()
-        # self.init_edit_graph()
-        # end_time = time.time()
-
-        # print("Finished initializing graph")
-        # print(f"Execution time: {end_time - start_time} seconds")
 
     def SP_step_cost(self, current_vertex, steps):
 
@@ -91,17 +80,12 @@ class CarrilloLipman:
 
                 chars.append(new_char)
 
-        total_cost += gaps * (self.k - gaps) * delta('-',new_char)
+        total_cost += gaps * (self.k - gaps) * self.delta('-',new_char)
 
         return total_cost
 
     def find_neighbours(self, vertex):
-        """
-        Find all neighbors for a given vertex in the context of edit distance.
-        
-        :param vertex: A tuple representing the current position in each sequence.
-        :return: A list of tuples representing neighboring vertices.
-        """
+
         neighbours = []
         # Generate all combinations of sequences in which to move forward
         for r in range(1, self.k+1):
@@ -121,19 +105,6 @@ class CarrilloLipman:
 
         return neighbours
 
-    # def init_edit_graph(self):
-
-    #     vertices = itertools.product(*(range(length + 1) for length in self.lengths))
-    #     # print(list(vertices))
-    #     for vertex in vertices:
-    #     # Each vertex maps to a dictionary of its neighbors and their edge weights
-    #     # Initially, neighbors can be empty or set to default values based on the problem
-    #         if vertex == self.source:
-
-    #             self.edit_graph[vertex] = (0, False, None) # (priority, visited, predecessor)
-    #         else:
-    #             self.edit_graph[vertex] = (INT_MAX, False, None)
-
     def optimal_cost(self, current_vertex):
 
         suffix_cost = 0
@@ -145,28 +116,22 @@ class CarrilloLipman:
                     true_pos1 = pos1 
                     true_pos2 = pos2 
 
-                    # print((self.id2key[idx1], self.sequences[self.id2key[idx1]][true_pos1:]))
-                    # print((self.id2key[idx2], self.sequences[self.id2key[idx2]][true_pos2:]))
                     pairwise_optimal_cost, _ = global_align((self.id2key[idx1], self.sequences[self.id2key[idx1]][true_pos1:]),(self.id2key[idx2], self.sequences[self.id2key[idx2]][true_pos2:]), self.delta)
                     suffix_cost += pairwise_optimal_cost
         optimal_cost = self.edit_graph[current_vertex][0] + suffix_cost
-        # breakpoint()
         return optimal_cost
         
     def shortest_path(self):
 
         self.num_visited = 1
 
-        with tqdm() as iteration:
-
+    
+        with tqdm(total = self.total_nodes) as pbar:
             while not self.pQueue.empty():
                 
                 current_priority,current_vertex  = self.pQueue.get()
 
                 neighbours_step= self.find_neighbours(current_vertex)
-
-                
-                self.edit_graph[current_vertex]  (0, True, None)
 
                 if any(index < 1 for index in current_vertex) or (self.optimal_cost(current_vertex) <= self.z):
 
@@ -177,7 +142,7 @@ class CarrilloLipman:
                         neighbour_vertex = tuple_sum(current_vertex, neighbour_step)
 
                         if neighbour_vertex not in self.edit_graph.keys():
-                           
+                            
                             self.edit_graph[neighbour_vertex] = (new_priority, False, current_vertex)                            
                             self.pQueue.put((new_priority,neighbour_vertex)) 
                             self.num_visited += 1
@@ -190,8 +155,8 @@ class CarrilloLipman:
                             if not self.edit_graph[neighbour_vertex][1]:
                                 self.pQueue.put((self.edit_graph[neighbour_vertex][0],neighbour_vertex))
                                 self.num_visited += 1
-
-                iteration.update()
+                pbar.update(1)
+            
                     
     def back_trace(self):
 
@@ -217,7 +182,14 @@ class CarrilloLipman:
         return self.alignment 
 
     def align(self):
+
+        start_time = time.time()
+
         self.shortest_path()
+        
+        end_time = time.time()
+        print(f"Execution time Carrillo-Lipman: {round(end_time - start_time,2)} seconds")
+
 
         return self.back_trace(), self.edit_graph[tuple(self.lengths)][0]
 
@@ -245,9 +217,6 @@ if __name__ == "__main__":
              "v2":"TGCCAGGGA",
              "v3":"TGCCGGA",
               "v4":"AGCCGGGAA" }
-    # ,
-    #          "v4":"AGCCGGGAA"}
-    
     
     alphabet = ['A', 'C', 'G', 'T', '-']
 
@@ -272,7 +241,3 @@ if __name__ == "__main__":
 
 
     print(aligner.z)
-
-    # for current_vertex, value in aligner.print_shortest_path():
-    #     print(current_vertex, value)
-   
