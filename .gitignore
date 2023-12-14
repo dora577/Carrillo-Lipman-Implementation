@@ -2,4 +2,6 @@
 *.docx
 /report/
 /data/
+/results/
 /__pycache__/
+*.ipynb

@@ -1,6 +1,78 @@
 from config import *
 
 
+from Bio import AlignIO
+
+
+def read_MSA(file_path):
+
+    reference_alignment_dict = {}
+    reference_alignment = AlignIO.read(file_path, "stockholm")
+
+    for record in reference_alignment:
+        reference_alignment_dict[record.id] = str(record.seq) 
+
+    return reference_alignment_dict
+
+
+def to_sequences(alignment):
+
+    original_sequences = {}
+
+    for seq_id, sequence in alignment.items():
+        original_sequences[seq_id] = sequence.replace('-', '')
+    return original_sequences
+
+
+
+
+def generate_pairs(alignment):
+    sequence_ids = sorted(list(alignment.keys()))    
+    pairs = set()
+    for i, seq_id1 in enumerate(sequence_ids):
+        for j, seq_id2  in enumerate(sequence_ids):
+            if i < j:
+                for idx1, l_1 in enumerate(alignment[seq_id1]):
+                    for idx2, l_2 in enumerate(alignment[seq_id2]):
+                        if l_1 == l_2:
+                            pairs.add((seq_id1, idx1, seq_id2,idx2))
+    return pairs
+
+def get_precision(pairs_ref, pairs):
+
+    TP = pairs.intersection(pairs_ref)
+
+    return len(TP)/len(pairs)
+    
+def get_recall(pairs_ref, pairs):
+
+    TP = pairs.intersection(pairs_ref)
+
+    FN = pairs_ref.difference(TP)
+
+    return len(TP)/(len(TP)+ len(FN))
+
+def get_F_score(precision, recall, b = 1):
+
+    return (1 + b**2) * (precision * recall)/(b**2 * precision + recall) 
+
+
+def evaluate(alignment_ref, alignment):
+
+    pairs_ref = generate_pairs(alignment_ref)
+
+    pairs = generate_pairs(alignment)
+
+    precision = get_precision(pairs_ref, pairs)
+
+    recall = get_recall(pairs_ref, pairs)
+
+    F_1_score = get_F_score(precision, recall)
+
+
+    return precision, recall, F_1_score
+
+
 def tuple_sum(tuple1, tuple2):
 
     if len(tuple1) != len(tuple2):
@@ -28,7 +100,7 @@ def pairwise_cost(seq1, seq2, delta):
             raise ValueError("two sequences are not of the same size")
         
         for i in range(len(seq1)):
-            cost += delta[seq1[i]][seq2[i]]
+            cost += delta(seq1[i], seq2[i])
         return cost
 
 def SP_cost(alignment, delta):
@@ -75,9 +147,6 @@ def global_align(v_tuple, w_tuple, delta):
     :param: w
     :param: delta
     """
-    if delta is None:
-        delta = delta
-    
     v_id, v = v_tuple
 
     w_id, w = w_tuple
@@ -89,13 +158,13 @@ def global_align(v_tuple, w_tuple, delta):
     
         if i > 0:
 
-            scores.append((M[i-1][j] + delta[v[i-1]]['-'], UP))
+            scores.append((M[i-1][j] + delta(v[i-1], '-'), UP))
 
         if j > 0:
-            scores.append((M[i][j-1] + delta['-'][w[j-1]], LEFT))
+            scores.append((M[i][j-1] + delta('-', w[j-1]), LEFT))
 
         if i > 0 and j > 0:
-            scores.append((M[i-1][j-1] + delta[v[i-1]][w[j-1]], TOPLEFT))
+            scores.append((M[i-1][j-1] + delta(v[i-1], w[j-1]), TOPLEFT))
 
         if i == 0 and j == 0:
             pass

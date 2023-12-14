@@ -1,20 +1,6 @@
 from Bio import AlignIO
 
 
-def transformToInput(alignment):
-
-    original_sequences = {}
-
-    lengths = set()
-
-    for record in alignment:
-        original_sequences[record.id] = str(record.seq).replace('-', '')
-        lengths.add(len(original_sequences[record.id]))
-    return original_sequences, lengths
-
-
-
-
 
 # Path to your alignment file
 file_path = 'data/PF00005.alignment.seed'
