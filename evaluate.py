@@ -53,7 +53,7 @@ columns = ['Alignment Name','Date & Time', 'reference SP cost', 'output SP cost'
 current_datetime = date.today().strftime("%m/%d") + " "+ datetime.now().strftime("%H:%M:%S")
 
 
-alignment_name = args.input_file.split('/')[-1]
+alignment_name = args.input_file.split('/')[-1].split('.')[0]
 
 # Open the file in append mode
 with open(results_path, mode='a', newline='') as csvfile:

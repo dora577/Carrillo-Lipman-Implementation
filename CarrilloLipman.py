@@ -133,6 +133,8 @@ class CarrilloLipman:
 
                 neighbours_step= self.find_neighbours(current_vertex)
 
+                self.edit_graph[current_vertex] = (current_priority,True, self.edit_graph[current_vertex][2])
+
                 if any(index < 1 for index in current_vertex) or (self.optimal_cost(current_vertex) <= self.z):
 
                     for neighbour_step in neighbours_step:
